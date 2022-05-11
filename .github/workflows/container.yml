@@ -1,0 +1,38 @@
+# the container name
+name: deploy-container
+
+# trigger the action when push to specified branch and path
+on: 
+  push: 
+    branches:
+      - master
+    paths:
+      - 'packages/container/**'
+
+# the file/directory the below JOBS execution action to perform on
+defaults: 
+  run:
+    working-directory: packages/container
+
+# the jobs/execution to perform on the working directory specified in default above
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    #this is steps of command execution
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run build
+
+
+      # this gives access to aws cli
+      - uses: shinyinc/action-aws-cli@v1.2
+      #this sync this dist file generated from build to s3 bucket
+      - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}//container/lastest
+        env: 
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRETE_ACCESS_KEY: ${{ secrets.AWS_SECRETE_ACCESS_KEY }}
+
+
+
+    
