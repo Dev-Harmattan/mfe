@@ -1,19 +1,19 @@
-name: deploy-container
+name: deploy-marketing
 
 on: 
   push: 
     branches:
       - master
     paths:
-      - 'packages/container/**'
+      - 'packages/marketing/**'
 
 defaults: 
   run:
-    working-directory: packages/container
+    working-directory: packages/marketing
 
 jobs:
   build:
-    name: Build container app
+    name: Build marketing app
     runs-on: ubuntu-latest
 
     steps:
@@ -26,8 +26,6 @@ jobs:
 
       - name: Build project
         run: npm run build
-        env:
-          PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -37,10 +35,10 @@ jobs:
           aws-region: us-east-1
 
       - name: Upload dist to s3 bucket
-        run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME}}/container/latest
+        run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME}}/marketing/latest
       
-      - name: Cloudfront automatic invalidation of index.html
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/container/latest/index.html"
+      - name: Cloudfront automatic invalidate marketing remoteEntry.js file
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/marketing/latest/remoteEntry.js"
         
 
 
