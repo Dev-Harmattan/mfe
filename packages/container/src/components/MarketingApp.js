@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 export default () => {
   const divRef = useRef(null);
   const history = useHistory();
+  const initialPathname = history.location.pathname;
   useEffect(() => {
     const {onParentNavigate} = MarketingMount(divRef.current, {
       onNavigate: ({pathname: nextPathname}) => {
@@ -14,7 +15,8 @@ export default () => {
         if(pathname !== nextPathname) {
           history.push(nextPathname);
         }
-      }
+      },
+      initialPathname
     });
 
     history.listen(onParentNavigate)
